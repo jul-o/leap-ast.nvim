@@ -14,6 +14,20 @@ local function get_ast_nodes()
     table.insert(nodes, parent)
     parent = parent:parent()
   end
+
+  local next_node = ts_utils.get_next_node(cur_node, true, true)
+  while next_node do
+    table.insert(nodes, next_node)
+    print(next_node)
+    next_node = ts_utils.get_next_node(next_node, true, true);
+  end
+
+  local previous_node = ts_utils.get_previous_node(cur_node, true, true)
+  while previous_node do
+    table.insert(nodes, previous_node)
+    previous_node = ts_utils.get_previous_node(previous_node, true, true);
+  end
+
   -- Create Leap targets from TS nodes.
   local targets = {}
   local startline, startcol
@@ -34,9 +48,9 @@ local function select_range(target)
     vim.cmd('normal! ' .. mode)
   end
   ts_utils.update_selection(0, target.node,
-    mode:match('V') and 'linewise' or
-    mode:match('') and 'blockwise' or
-    'charwise'
+  mode:match('V') and 'linewise' or
+  mode:match('') and 'blockwise' or
+  'charwise'
   )
 end
 
