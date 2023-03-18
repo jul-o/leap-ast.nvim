@@ -7,8 +7,11 @@ local function get_children_nodes(node)
   local result = {};
 
   for _, child in ipairs(children) do
-    local gc = get_children_nodes(child)
     table.insert(result, child);
+  end
+
+  for _, child in ipairs(children) do
+    local gc = get_children_nodes(child)
     for _, gc_child in ipairs(gc) do
       table.insert(result, gc_child);
     end
