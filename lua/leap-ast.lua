@@ -2,6 +2,20 @@ local api = vim.api
 -- Note: The functions used here will be upstreamed eventually.
 local ts_utils = require('nvim-treesitter.ts_utils')
 
+local function get_children_nodes(node)
+  local children = ts_utils.get_named_children(node);
+  local result = {};
+
+  for _, child in ipairs(children) do
+    local gc = get_children_nodes(child)
+    table.insert(result, child);
+    for _, gc_child in ipairs(gc) do
+      table.insert(result, gc_child);
+    end
+  end
+  return result;
+end
+
 local function get_ast_nodes()
   local wininfo = vim.fn.getwininfo(api.nvim_get_current_win())[1]
   -- Get current TS node.
@@ -26,6 +40,11 @@ local function get_ast_nodes()
   while previous_node do
     table.insert(nodes, previous_node)
     previous_node = ts_utils.get_previous_node(previous_node, true, true);
+  end
+
+  local children = get_children_nodes(cur_node);
+  for _, child in ipairs(children) do
+    table.insert(nodes, child)
   end
 
   -- Create Leap targets from TS nodes.
